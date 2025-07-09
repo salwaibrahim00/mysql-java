@@ -10,9 +10,10 @@ import recipes.exception.DbException;
 public class Recipes {
     private Scanner scanner = new Scanner(System.in);
     private RecipeService recipeService = new RecipeService();
-    
+
     private List<String> operations = List.of(
-        "1) Create and populate all tables"
+        "1) Create and populate all tables",
+        "2) Add a recipe"
     );
 
     public static void main(String[] args) {
@@ -32,6 +33,9 @@ public class Recipes {
                     case 1:
                         createTables();
                         break;
+                    case 2:
+                        addRecipe();
+                        break;
                     default:
                         System.out.println("\n" + operation + " is not valid. Try again.");
                         break;
@@ -45,6 +49,46 @@ public class Recipes {
     private void createTables() {
         recipeService.createAndPopulatedTables();
         System.out.println("\nTables created and populated");
+    }
+
+    private void addRecipe() {
+        System.out.println("\n--- Add a New Recipe ---");
+
+        String name = getStringInput("Enter recipe name");
+        if (name == null) {
+            System.out.println("Recipe name is required.");
+            return;
+        }
+
+        Integer servings = null;
+        try {
+            servings = getIntInput("Enter number of servings");
+        } catch (DbException e) {
+            System.out.println("Invalid number for servings.");
+            return;
+        }
+
+        Double prepTime = null;
+        try {
+            prepTime = getDoubleInput("Enter prep time in minutes");
+        } catch (DbException e) {
+            System.out.println("Invalid number for prep time.");
+            return;
+        }
+
+        Double cookTime = null;
+        try {
+            cookTime = getDoubleInput("Enter cook time in minutes");
+        } catch (DbException e) {
+            System.out.println("Invalid number for cook time.");
+            return;
+        }
+
+        String notes = getStringInput("Enter notes (optional)");
+
+        recipeService.addRecipe(name, servings, prepTime, cookTime, notes);
+
+        System.out.println("\nRecipe added successfully!");
     }
 
     private boolean exitMenu() {
